@@ -28,6 +28,7 @@ class ComponentsTest(unittest.TestCase):
         self.assertEqual(chunk.observation_timestamp, 2.)
         self.assertGreaterEqual(timing['inference_s'], 0)
         recovery = RecoveryController('rule', 1)
+        self.assertEqual(recovery.decide('none', .1), 'continue')
         self.assertEqual(recovery.decide('grasp', .9), 'regrasp')
         self.assertEqual(recovery.decide('grasp', .9), 'terminate')
 

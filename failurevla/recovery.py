@@ -18,7 +18,9 @@ class RecoveryController:
     def decide(self, failure_type, probability):
         if not 0 <= probability <= 1:
             raise ValueError('invalid probability')
-        if self.budget == 0 or self.mode == 'none' or failure_type == 'none':
+        if failure_type == 'none':
+            return 'continue'
+        if self.budget == 0 or self.mode == 'none':
             return 'terminate'
         if self.mode != 'fixed' and probability < self.threshold:
             return 'continue'
