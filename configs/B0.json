@@ -1,0 +1,6 @@
+{
+  "method": "B0",
+  "policy": "anygrasp_moveit",
+  "recovery": "none",
+  "execution": "synchronous"
+}

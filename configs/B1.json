@@ -1,0 +1,6 @@
+{
+  "method": "B1",
+  "policy": "smolvla",
+  "recovery": "none",
+  "execution": "synchronous"
+}

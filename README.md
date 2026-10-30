@@ -2,6 +2,8 @@
 
 面向机器人操作的数据处理与动作执行研究：本仓库提供 G1-D 抓取轨迹、状态历史预测基线和状态对齐的异步动作缓冲组件，为后续扩展多任务、失败与恢复数据提供基础。
 
+配套工程：[unitree-g1d-grasp](https://github.com/1720d8eaff/unitree-g1d-grasp) 提供 AnyGrasp、MoveIt 和机器人执行链路；独立容器操作项目见 [ContainerLoop-VLA](https://github.com/1720d8eaff/ContainerLoop-VLA)。
+
 ## 数据
 
 首批公开 70 段轨迹，共 43,187 帧，约 1,438 秒，来自 G1-D 左臂与 RH56H1 六指手的抓取示教。相机数据体积较大，不便于传输，本仓库公开轨迹数据。文件位于 `data/traj/`，HDF5 中包括：
@@ -48,3 +50,20 @@ buffer = ActionBuffer(max_age_s=0.2, max_state_error=0.1)
 buffer.replace(1, 10.0, 10.1, [0.0, 0.0], [0.01, 0.0], [[0.1, 0.2]])
 action = buffer.pop()
 ```
+
+## 策略、恢复与评测接口
+
+`failurevla.policy.SmolVLAAdapter` 接受已加载的 LeRobot 策略、观测编码和动作解码回调，调用 `predict_action_chunk`；参考 [LeRobot SmolVLA](https://huggingface.co/docs/lerobot/main/smolvla)。`MockPolicy` 仅用于接口测试。`failurevla.representation` 提供历史 GRU、失败类别、任务阶段和进度预测头及监督损失；`configs/training.json` 给出损失权重和重采样参数。需要使用有标签数据训练并保存权重。
+
+对按完整轨迹划分好的训练集，可使用 `python -m failurevla.train_representation --data train.npz --output runs/failure_head.pt`。NPZ 字段是 `observation`、`state`、`action` 三组 `[样本, 历史长度, 维度]` 数组，`target_action`、`failure`、`progress`、`stage` 是对应监督标签。请先按轨迹划分数据集，再仅对训练集重采样。
+
+`failurevla.recovery` 提供有预算的无恢复、固定重试、规则与可注入学习策略；`robot_backends/unitree_grasp_backend.py` 对接机器人仓库的回调式 bridge。AnyGrasp 辅助恢复通过该 bridge 获取候选并交由碰撞、可达和规划回调筛选。两个仓库之间的消息使用 `failurevla/contracts.py` 中的数据类；硬件集成时需配置实际的观测、规划和已审阅执行回调。
+
+`failurevla.execution.Executor` 支持同步、朴素异步和状态对齐异步；异步推理由 `InferenceWorker` 执行，记录推理与等待时间，缓冲区支持提前重规划和过期块筛选。实验方法 B0–B7 的配置位于 `configs/`。运行时需提供实际环境的 episode 函数，其返回包含 `episode_id` 与实测指标的字典：
+
+```bash
+python -m failurevla.runner --method B6 --runner my_experiment:run_episode --log runs/episodes.jsonl
+python -m failurevla.evaluation runs/episodes.jsonl
+```
+
+JSONL 支持 `task_success`、`grasp_success`、`failure_tp/fp/fn`、`recovery_attempts`、`recovery_successes`、`inference_blocking_s`、`task_time_s`、`stale_rejected`、`chunks_received`、`human_intervention`；无测量值保持缺失，不当作成功或失败。统计按方法分组，分别保留完整任务与抓取指标。接口测试、真实模型运行与真机实验的证据范围见 [简历证据索引](docs/RESUME_EVIDENCE.md)。

@@ -1,0 +1,7 @@
+{
+  "history_length": 10,
+  "lambda_failure": 1.0,
+  "lambda_progress": 1.0,
+  "lambda_stage": 1.0,
+  "hard_case_weight": 3.0
+}
