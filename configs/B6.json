@@ -1,0 +1,6 @@
+{
+  "method": "B6",
+  "policy": "failure_aware_smolvla",
+  "recovery": "learned",
+  "execution": "aligned_async"
+}

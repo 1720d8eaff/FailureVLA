@@ -1,0 +1,6 @@
+{
+  "method": "B4",
+  "policy": "failure_aware_smolvla",
+  "recovery": "learned",
+  "execution": "synchronous"
+}
