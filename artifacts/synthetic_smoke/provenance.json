@@ -1,0 +1,6 @@
+{
+  "source": "synthetic_fixture",
+  "seed": 42,
+  "scope": "procedural smoke test; no VLA checkpoint and no robot task success",
+  "epochs": 2
+}

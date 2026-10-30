@@ -20,6 +20,8 @@ def load_episode(path):
         instruction = f["instruction"][()]
         values["instruction"] = instruction.decode("utf-8") if isinstance(instruction, bytes) else str(instruction)
         values["t"] = t
+        # Preserve raw channels while exposing which arm actually has a signal.
+        values['eef_right_available'] = bool(np.any(values['eef_right'] != 0))
     return values
 
 

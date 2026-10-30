@@ -1,0 +1,66 @@
+{
+  "scope": "held-out labeled windows, not robot task success",
+  "samples": 42,
+  "failure_accuracy": 0.0,
+  "progress_mae": 0.19535530713342486,
+  "action_mse": 1.8092092432198115e-05,
+  "base_action_mse": 1.7416001355741173e-05,
+  "failure_classes": [
+    "none",
+    "visual_localization",
+    "grasp",
+    "execution_deviation",
+    "target_change",
+    "premature_termination"
+  ],
+  "confusion_matrix": [
+    [
+      0,
+      0,
+      0,
+      0,
+      21,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      21,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ]
+}

@@ -1,0 +1,2 @@
+# Install in a dedicated model environment; the CPU core does not need LeRobot.
+lerobot[smolvla]

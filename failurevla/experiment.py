@@ -16,6 +16,8 @@ METHODS = {
 
 
 def write_record(path, record):
+    from .strict_metrics import completed_summary
+    completed_summary([record])
     if record.get('method') not in METHODS or not record.get('episode_id'):
         raise ValueError('record needs a known method and episode_id')
     path = Path(path)

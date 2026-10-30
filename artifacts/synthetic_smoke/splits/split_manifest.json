@@ -1,0 +1,75 @@
+{
+  "seed": 42,
+  "history": 4,
+  "horizon": 4,
+  "base_policy": "last_delta",
+  "annotation_sha256": "ed7e67e91f5526550dfa4b23b4b062ba1048553512970ddabfca2c61d43f7304",
+  "splits": {
+    "test": [
+      {
+        "episode": "fixture_00.h5",
+        "source": "synthetic_fixture",
+        "sha256": "e1ff4bad35bdc1fce146f02469c3fadde7c48194c272a9af4412b0475fb3a81a"
+      },
+      {
+        "episode": "fixture_07.h5",
+        "source": "synthetic_fixture",
+        "sha256": "058641aefff77ec3615703acfd8c5f35632d4384e466d9d95d1c913aa6bc6103"
+      }
+    ],
+    "validation": [
+      {
+        "episode": "fixture_06.h5",
+        "source": "synthetic_fixture",
+        "sha256": "412dc3ef21332711a682684c642adc18910fc33a0882b41cd8dafadffd2693af"
+      },
+      {
+        "episode": "fixture_09.h5",
+        "source": "synthetic_fixture",
+        "sha256": "9265a8bc39ae0442acab368ba98e91de27cb76ef803e8ec5171ea93b0c54b402"
+      }
+    ],
+    "train": [
+      {
+        "episode": "fixture_11.h5",
+        "source": "synthetic_fixture",
+        "sha256": "531573df492f1618f2f8a838d40346eb49f3c6a70e12a88b0792d6c0a820fbae"
+      },
+      {
+        "episode": "fixture_03.h5",
+        "source": "synthetic_fixture",
+        "sha256": "8d765b5593401c6b465d2867f8409f0feecf17d2476099c6dcdb600d1c7a8a09"
+      },
+      {
+        "episode": "fixture_05.h5",
+        "source": "synthetic_fixture",
+        "sha256": "45ba51bbd76d69ee74b319962ca75a4df1111f657d10ccc0abb27aaf34b3722a"
+      },
+      {
+        "episode": "fixture_02.h5",
+        "source": "synthetic_fixture",
+        "sha256": "28b7a9a2eaf3881627af97d3e3d9ee437b82794d120fc5112c79a64d7fe67253"
+      },
+      {
+        "episode": "fixture_04.h5",
+        "source": "synthetic_fixture",
+        "sha256": "0dbfbe22c581d036b8df735dcfd6419002ebf331dbad8cee06eb270bb2412ea5"
+      },
+      {
+        "episode": "fixture_10.h5",
+        "source": "synthetic_fixture",
+        "sha256": "bac5e0d0e33f7dbb95ede3c419b3752ee37848fd7b95e5d75b1bba832cc76add"
+      },
+      {
+        "episode": "fixture_01.h5",
+        "source": "synthetic_fixture",
+        "sha256": "0006422bf09cd2ff59c958cec85048e5da6fef33481dc855c528cdf59d56418b"
+      },
+      {
+        "episode": "fixture_08.h5",
+        "source": "synthetic_fixture",
+        "sha256": "16d73d3daf7cdc180505214ed79e26c46f93866def6858dc3b27b412748fe117"
+      }
+    ]
+  }
+}

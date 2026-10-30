@@ -53,6 +53,20 @@ action = buffer.pop()
 
 ## 策略、恢复与评测接口
 
+### 本地可复现链路
+
+`python -m failurevla.smoke` 生成带 `synthetic_fixture` 来源的程序化标注轨迹，按 episode 生成训练/验证/测试窗口，训练两轮并对测试窗口计算分类混淆矩阵、进度误差和动作误差。输出在 `artifacts/synthetic_smoke/`；真实执行的摘要已保留，权重是程序化 fixture 的训练产物，不是 SmolVLA 权重。测试集分类可能很差，这个入口验证数据与训练连接，不证明机器人任务性能。
+
+真实轨迹标注：先运行 `python -m failurevla.annotate export --data data/traj --output annotations.csv`，逐帧填写 failure（见 `representation.FAILURES`）、progress 和 stage，再运行 `python -m failurevla.annotate import --csv annotations.csv --output annotations.jsonl`。空标签会被拒绝，不会从仅有的关节数据猜测视觉失败。`python -m failurevla.labeled_data --data data/traj --annotations annotations.jsonl --output prepared` 按 episode 分割并保留输入哈希；其基础动作是上一帧增量外推。
+
+`python -m failurevla.heldout --checkpoint MODEL.pt --data prepared/test.npz --output metrics.json` 计算独立测试窗口误差。训练仍使用 `train_failure_aware`；数据必须使用相同动作尺度。`data.load_episode` 保留右臂原始通道并额外返回 `eef_right_available`，全零通道不会被当作有右臂观测信号。
+
+`python -m failurevla.replay_runtime --episode data/traj/FILE.h5` 在实际 `Executor` 上按 30 Hz 运行三种模式，记录每周期 deadline、耗时、过期块等。`artifacts/replay/` 是录制轨迹回放和人工注入延迟的本机测量，不是机器人控制延迟。`runtime.run` 可接入实际 observe/consume 回调；Python 定时不保证硬实时。
+
+实际 SmolVLA 权重入口：在独立环境 `pip install -r requirements-smolvla.txt`，运行 `python -m failurevla.checkpoint --checkpoint PATH --input observation.npz --instruction "grasp" --output actions.npy`。NPZ 需要 `state` 和 `image.<camera>` RGB uint8 数组；加载 checkpoint 的预处理和后处理以还原物理动作。参照 [LeRobot 模型文档](https://huggingface.co/lerobot/smolvla_base)。当前并未验证某个 G1-D 微调权重；该入口输出物理动作，与残差头训练尺度需显式一致。
+
+完整实验 CLI `failurevla.evaluation` 和结果写入现在要求完整 episode 测量及 source，缺失值会报错；较宽松的 `summarize` 仍用于部分诊断，不用于完整结果发布。配置 B0–B7 仍需实际策略、任务与现场参数，不能通过回放或合成统计产生真机成功率。
+
 `failurevla.failure_aware.FailureAwareRefiner` 在状态历史的失败概率和进度条件下，对策略动作块生成有界残差；残差头零初始化，训练之前保留基础动作。`FailureAwareSmolVLA` 接收 SmolVLA 策略和观测、历史、动作转换回调，输出动作块与失败概率、进度、恢复决策；使用 `predict_with_diagnostics` 后由上层处理恢复或终止。`predict` 可接入现有执行器，遇到需要恢复的决策会停止并要求调用方处理。
 
 使用按 episode 预先划分的 NPZ 训练：`python -m failurevla.train_failure_aware --data train.npz --output runs/failure_aware.pt`。数组为 `observation`、`state`、`action`（均为 `[batch, history, dim]`），`base_actions` 和 `target_actions`（均为 `[batch, horizon, action_dim]`），以及一维 `failure`、`progress`、`stage` 标签。动作必须使用同一归一化空间；故障编码参照 `representation.FAILURES`。运行时由调用方加载 checkpoint、创建对应尺寸的模型并设置 eval 模式，按具体 LeRobot 版本准备策略输入和历史。测试使用模拟策略，不提供真实训练结果。

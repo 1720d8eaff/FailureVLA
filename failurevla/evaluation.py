@@ -30,7 +30,8 @@ def main():
     a = p.parse_args()
     rows = [json.loads(line) for line in a.log.read_text(encoding='utf-8').splitlines() if line.strip()]
     methods = sorted({r['method'] for r in rows})
-    print(json.dumps({method: summarize([r for r in rows if r['method'] == method]) for method in methods}, indent=2))
+    from .strict_metrics import completed_summary
+    print(json.dumps({method: completed_summary([r for r in rows if r['method'] == method]) for method in methods}, indent=2))
 
 
 if __name__ == '__main__':

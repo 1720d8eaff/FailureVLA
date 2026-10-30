@@ -1,0 +1,32 @@
+{
+  "source": "recorded_trajectory_replay",
+  "injected_delay_s": 0.04,
+  "target_hz": 30,
+  "episode": "traj_102521_0001.h5",
+  "results": {
+    "synchronous": {
+      "ticks": 60,
+      "lateness_p50_s": 0.0003345997247379273,
+      "lateness_p95_s": 0.007603682996705175,
+      "work_p95_s": 0.04062343000841793,
+      "inference_count": 8,
+      "chunks_rejected": 0
+    },
+    "naive_async": {
+      "ticks": 60,
+      "lateness_p50_s": 0.00024718308850424364,
+      "lateness_p95_s": 0.0005270315879897678,
+      "work_p95_s": 0.00015666499457438473,
+      "inference_count": 7,
+      "chunks_rejected": 0
+    },
+    "aligned_async": {
+      "ticks": 60,
+      "lateness_p50_s": 0.0004301997250877321,
+      "lateness_p95_s": 0.0005941713112406433,
+      "work_p95_s": 0.0001869250081654172,
+      "inference_count": 8,
+      "chunks_rejected": 0
+    }
+  }
+}
