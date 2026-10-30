@@ -53,6 +53,10 @@ action = buffer.pop()
 
 ## 策略、恢复与评测接口
 
+`failurevla.failure_aware.FailureAwareRefiner` 在状态历史的失败概率和进度条件下，对策略动作块生成有界残差；残差头零初始化，训练之前保留基础动作。`FailureAwareSmolVLA` 接收 SmolVLA 策略和观测、历史、动作转换回调，输出动作块与失败概率、进度、恢复决策；使用 `predict_with_diagnostics` 后由上层处理恢复或终止。`predict` 可接入现有执行器，遇到需要恢复的决策会停止并要求调用方处理。
+
+使用按 episode 预先划分的 NPZ 训练：`python -m failurevla.train_failure_aware --data train.npz --output runs/failure_aware.pt`。数组为 `observation`、`state`、`action`（均为 `[batch, history, dim]`），`base_actions` 和 `target_actions`（均为 `[batch, horizon, action_dim]`），以及一维 `failure`、`progress`、`stage` 标签。动作必须使用同一归一化空间；故障编码参照 `representation.FAILURES`。运行时由调用方加载 checkpoint、创建对应尺寸的模型并设置 eval 模式，按具体 LeRobot 版本准备策略输入和历史。测试使用模拟策略，不提供真实训练结果。
+
 `failurevla.policy.SmolVLAAdapter` 接受已加载的 LeRobot 策略、观测编码和动作解码回调，调用 `predict_action_chunk`；参考 [LeRobot SmolVLA](https://huggingface.co/docs/lerobot/main/smolvla)。`MockPolicy` 仅用于接口测试。`failurevla.representation` 提供历史 GRU、失败类别、任务阶段和进度预测头及监督损失；`configs/training.json` 给出损失权重和重采样参数。需要使用有标签数据训练并保存权重。
 
 对按完整轨迹划分好的训练集，可使用 `python -m failurevla.train_representation --data train.npz --output runs/failure_head.pt`。NPZ 字段是 `observation`、`state`、`action` 三组 `[样本, 历史长度, 维度]` 数组，`target_action`、`failure`、`progress`、`stage` 是对应监督标签。请先按轨迹划分数据集，再仅对训练集重采样。
