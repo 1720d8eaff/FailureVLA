@@ -2,7 +2,7 @@
 
 面向机器人操作的数据处理与动作执行研究：本仓库提供 G1-D 抓取轨迹、状态历史预测基线和状态对齐的异步动作缓冲组件，为后续扩展多任务、失败与恢复数据提供基础。
 
-配套工程：[unitree-g1d-grasp](https://github.com/1720d8eaff/unitree-g1d-grasp) 提供 AnyGrasp、MoveIt 和机器人执行链路；独立容器操作项目见 [ContainerLoop-VLA](https://github.com/1720d8eaff/ContainerLoop-VLA)。
+配套工程：[unitree-g1d-grasp](https://github.com/1720d8eaff/unitree-g1d-grasp) 提供 AnyGrasp、MoveIt 和机器人执行链路；
 
 ## 数据
 
@@ -63,9 +63,7 @@ action = buffer.pop()
 
 `python -m failurevla.replay_runtime --episode data/traj/FILE.h5` 在实际 `Executor` 上按 30 Hz 运行三种模式，记录每周期 deadline、耗时、过期块等。`artifacts/replay/` 是录制轨迹回放和人工注入延迟的本机测量，不是机器人控制延迟。`runtime.run` 可接入实际 observe/consume 回调；Python 定时不保证硬实时。
 
-实际 SmolVLA 权重入口：在独立环境 `pip install -r requirements-smolvla.txt`，运行 `python -m failurevla.checkpoint --checkpoint PATH --input observation.npz --instruction "grasp" --output actions.npy`。NPZ 需要 `state` 和 `image.<camera>` RGB uint8 数组；加载 checkpoint 的预处理和后处理以还原物理动作。参照 [LeRobot 模型文档](https://huggingface.co/lerobot/smolvla_base)。当前并未验证某个 G1-D 微调权重；该入口输出物理动作，与残差头训练尺度需显式一致。
-
-完整实验 CLI `failurevla.evaluation` 和结果写入现在要求完整 episode 测量及 source，缺失值会报错；较宽松的 `summarize` 仍用于部分诊断，不用于完整结果发布。配置 B0–B7 仍需实际策略、任务与现场参数，不能通过回放或合成统计产生真机成功率。
+实际 SmolVLA 权重入口：在独立环境 `pip install -r requirements-smolvla.txt`，运行 `python -m failurevla.checkpoint --checkpoint PATH --input observation.npz --instruction "grasp" --output actions.npy`。NPZ 需要 `state` 和 `image.<camera>` RGB uint8 数组；加载 checkpoint 的预处理和后处理以还原物理动作。参照 [LeRobot 模型文档](https://huggingface.co/lerobot/smolvla_base)；该入口输出物理动作，与残差头训练尺度需显式一致。
 
 `failurevla.failure_aware.FailureAwareRefiner` 在状态历史的失败概率和进度条件下，对策略动作块生成有界残差；残差头零初始化，训练之前保留基础动作。`FailureAwareSmolVLA` 接收 SmolVLA 策略和观测、历史、动作转换回调，输出动作块与失败概率、进度、恢复决策；使用 `predict_with_diagnostics` 后由上层处理恢复或终止。`predict` 可接入现有执行器，遇到需要恢复的决策会停止并要求调用方处理。
 
