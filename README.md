@@ -1,6 +1,6 @@
 # FailureVLA
 
-面向机器人操作的数据处理与动作执行研究：本仓库提供 G1-D 抓取轨迹、状态历史预测基线和状态对齐的异步动作缓冲组件，为后续扩展多任务、失败与恢复数据提供基础。
+面向机器人操作的数据处理与动作执行研究。
 
 配套工程：[unitree-g1d-grasp](https://github.com/1720d8eaff/unitree-g1d-grasp) 提供 AnyGrasp、MoveIt 和机器人执行链路；
 
