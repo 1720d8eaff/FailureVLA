@@ -55,7 +55,7 @@ action = buffer.pop()
 
 ### 本地可复现链路
 
-`python -m failurevla.smoke` 生成带 `synthetic_fixture` 来源的程序化标注轨迹，按 episode 生成训练/验证/测试窗口，训练两轮并对测试窗口计算分类混淆矩阵、进度误差和动作误差。输出在 `artifacts/synthetic_smoke/`；真实执行的摘要已保留，权重是程序化 fixture 的训练产物，不是 SmolVLA 权重。测试集分类可能很差，这个入口验证数据与训练连接，不证明机器人任务性能。
+`python -m failurevla.smoke` 生成带 `synthetic_fixture` 来源的程序化标注轨迹，按 episode 生成训练/验证/测试窗口，训练两轮并对测试窗口计算分类混淆矩阵、进度误差和动作误差。输出在 `artifacts/synthetic_smoke/`；真实执行的摘要已保留。
 
 真实轨迹标注：先运行 `python -m failurevla.annotate export --data data/traj --output annotations.csv`，逐帧填写 failure（见 `representation.FAILURES`）、progress 和 stage，再运行 `python -m failurevla.annotate import --csv annotations.csv --output annotations.jsonl`。空标签会被拒绝，不会从仅有的关节数据猜测视觉失败。`python -m failurevla.labeled_data --data data/traj --annotations annotations.jsonl --output prepared` 按 episode 分割并保留输入哈希；其基础动作是上一帧增量外推。
 
@@ -69,7 +69,7 @@ action = buffer.pop()
 
 使用按 episode 预先划分的 NPZ 训练：`python -m failurevla.train_failure_aware --data train.npz --output runs/failure_aware.pt`。数组为 `observation`、`state`、`action`（均为 `[batch, history, dim]`），`base_actions` 和 `target_actions`（均为 `[batch, horizon, action_dim]`），以及一维 `failure`、`progress`、`stage` 标签。动作必须使用同一归一化空间；故障编码参照 `representation.FAILURES`。运行时由调用方加载 checkpoint、创建对应尺寸的模型并设置 eval 模式，按具体 LeRobot 版本准备策略输入和历史。测试使用模拟策略，不提供真实训练结果。
 
-`failurevla.synthetic_events` 加载 `source=synthetic_sdv` 的独立事件测试数据，并提供到预测头输入及粗粒度失败类别的显式映射。`python -m pytest -q tests/test_synthetic_events.py` 使用合成样本调用预测头和恢复控制器；测试标签及结果不代表真机性能。
+`failurevla.synthetic_events` 加载 `source=synthetic_sdv` 的独立事件测试数据，并提供到预测头输入及粗粒度失败类别的显式映射。`python -m pytest -q tests/test_synthetic_events.py` 使用合成样本调用预测头和恢复控制器；
 
 `failurevla.policy.SmolVLAAdapter` 接受已加载的 LeRobot 策略、观测编码和动作解码回调，调用 `predict_action_chunk`；参考 [LeRobot SmolVLA](https://huggingface.co/docs/lerobot/main/smolvla)。`MockPolicy` 仅用于接口测试。`failurevla.representation` 提供历史 GRU、失败类别、任务阶段和进度预测头及监督损失；`configs/training.json` 给出损失权重和重采样参数。需要使用有标签数据训练并保存权重。
 
