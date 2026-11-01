@@ -84,4 +84,4 @@ python -m failurevla.runner --method B6 --runner my_experiment:run_episode --log
 python -m failurevla.evaluation runs/episodes.jsonl
 ```
 
-JSONL 支持 `task_success`、`grasp_success`、`failure_tp/fp/fn`、`recovery_attempts`、`recovery_successes`、`inference_blocking_s`、`task_time_s`、`stale_rejected`、`chunks_received`、`human_intervention`；无测量值保持缺失，不当作成功或失败。统计按方法分组，分别保留完整任务与抓取指标。接口测试、真实模型运行与真机实验的证据范围见 [简历证据索引](docs/RESUME_EVIDENCE.md)。
+JSONL 支持 `task_success`、`grasp_success`、`failure_tp/fp/fn`、`recovery_attempts`、`recovery_successes`、`inference_blocking_s`、`task_time_s`、`stale_rejected`、`chunks_received`、`human_intervention`；无测量值保持缺失，不当作成功或失败。统计按方法分组，分别保留完整任务与抓取指标。
