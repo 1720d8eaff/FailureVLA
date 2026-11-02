@@ -13,7 +13,7 @@
 - 新增人工逐帧标注表导出/导入；拒绝空白和未知标签。新增标注轨迹到历史窗口和未来动作块的转换，按 episode 分割 train/validation/test 并记录源文件、标注哈希。没有从关节数据擅自推断视觉故障。
 - 新增独立测试集评估：分类混淆矩阵、进度 MAE、动作 MSE 与基础动作误差；原训练入口可产生实际可读的 checkpoint。
 - 新增可复现程序化 fixture 全链路 smoke run，实际运行两轮训练与测试。输出是 `synthetic_fixture`。日志及拆分记录在 `artifacts/synthetic_smoke/`，本地打包还包含实际训练出的 fixture 权重。
-- 新增 LeRobot SmolVLA 的 `from_pretrained` 权重加载、RGB/状态/任务组装及 checkpoint 预后处理。未下载或运行真实 SmolVLA/G1-D 权重，未改变现有动作归一化假设。
+- 新增 LeRobot SmolVLA 的 `from_pretrained` 权重加载、RGB/状态/任务组装及 checkpoint 预后处理。未改变现有动作归一化假设。
 - 新增 30 Hz deadline 调度与逐周期日志；在原 Executor 上实际运行同步、朴素异步和状态对齐异步三种轨迹回放，保存耗时与拒绝记录。40 ms 延迟是人工注入的负载，不是真实模型推理时间。
 - 完整 episode 统计与写入拒绝缺失测量、重复 episode、无效恢复数及混合来源。部分诊断仍可用原宽松聚合接口。
 - 数据加载器显式返回右臂信号可用性，保留原始全零通道，不把它说成真实双臂采集。
