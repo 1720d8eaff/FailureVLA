@@ -67,7 +67,7 @@ action = buffer.pop()
 
 `failurevla.failure_aware.FailureAwareRefiner` 在状态历史的失败概率和进度条件下，对策略动作块生成有界残差；残差头零初始化，训练之前保留基础动作。`FailureAwareSmolVLA` 接收 SmolVLA 策略和观测、历史、动作转换回调，输出动作块与失败概率、进度、恢复决策；使用 `predict_with_diagnostics` 后由上层处理恢复或终止。`predict` 可接入现有执行器，遇到需要恢复的决策会停止并要求调用方处理。
 
-使用按 episode 预先划分的 NPZ 训练：`python -m failurevla.train_failure_aware --data train.npz --output runs/failure_aware.pt`。数组为 `observation`、`state`、`action`（均为 `[batch, history, dim]`），`base_actions` 和 `target_actions`（均为 `[batch, horizon, action_dim]`），以及一维 `failure`、`progress`、`stage` 标签。动作必须使用同一归一化空间；故障编码参照 `representation.FAILURES`。运行时由调用方加载 checkpoint、创建对应尺寸的模型并设置 eval 模式，按具体 LeRobot 版本准备策略输入和历史。测试使用模拟策略，不提供真实训练结果。
+使用按 episode 预先划分的 NPZ 训练：`python -m failurevla.train_failure_aware --data train.npz --output runs/failure_aware.pt`。数组为 `observation`、`state`、`action`（均为 `[batch, history, dim]`），`base_actions` 和 `target_actions`（均为 `[batch, horizon, action_dim]`），以及一维 `failure`、`progress`、`stage` 标签。动作必须使用同一归一化空间；故障编码参照 `representation.FAILURES`。运行时由调用方加载 checkpoint、创建对应尺寸的模型并设置 eval 模式，按具体 LeRobot 版本准备策略输入和历史。
 
 `failurevla.synthetic_events` 加载 `source=synthetic_sdv` 的独立事件测试数据，并提供到预测头输入及粗粒度失败类别的显式映射。`python -m pytest -q tests/test_synthetic_events.py` 使用合成样本调用预测头和恢复控制器；
 
