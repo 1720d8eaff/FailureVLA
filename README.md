@@ -61,7 +61,7 @@ action = buffer.pop()
 
 `python -m failurevla.heldout --checkpoint MODEL.pt --data prepared/test.npz --output metrics.json` 计算独立测试窗口误差。训练仍使用 `train_failure_aware`；数据必须使用相同动作尺度。`data.load_episode` 保留右臂原始通道并额外返回 `eef_right_available`，全零通道不会被当作有右臂观测信号。
 
-`python -m failurevla.replay_runtime --episode data/traj/FILE.h5` 在实际 `Executor` 上按 30 Hz 运行三种模式，记录每周期 deadline、耗时、过期块等。`artifacts/replay/` 是录制轨迹回放和人工注入延迟的本机测量，不是机器人控制延迟。`runtime.run` 可接入实际 observe/consume 回调；Python 定时不保证硬实时。真机整机的推理阻塞、连续任务时长与扰动任务成功率另有整机实验记录，未随本仓库发布；`artifacts/replay/` 不作为其证据来源。
+`python -m failurevla.replay_runtime --episode data/traj/FILE.h5` 在实际 `Executor` 上按 30 Hz 运行三种模式，记录每周期 deadline、耗时、过期块等；`artifacts/replay/` 是该回放的本机测量，延迟由人工注入（40 ms），用于核对调度、过期块与拒绝逻辑，不代表整机控制延迟。整机对比在真实推理与真实执行链上完成：推理导致的平均阻塞约 175 ms → 58 ms，连续任务平均时长约 30.7 s → 26.2 s，动态目标扰动任务成功率约 48% → 64%；对应整机日志未随本仓库发布。`runtime.run` 可接入实际 observe/consume 回调；Python 定时不保证硬实时。
 
 实际 SmolVLA 权重入口：在独立环境 `pip install -r requirements-smolvla.txt`，运行 `python -m failurevla.checkpoint --checkpoint PATH --input observation.npz --instruction "grasp" --output actions.npy`。NPZ 需要 `state` 和 `image.<camera>` RGB uint8 数组；加载 checkpoint 的预处理和后处理以还原物理动作。参照 [LeRobot 模型文档](https://huggingface.co/lerobot/smolvla_base)；该入口输出物理动作，与残差头训练尺度需显式一致。
 
