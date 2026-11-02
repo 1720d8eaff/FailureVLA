@@ -19,6 +19,18 @@
 
 轨迹中的末端状态由关节正运动学计算；手部开合度由六指位置的均值换算。数据保留原始时间戳，使用时请以 `t` 为准。
 
+## 整机结果
+
+在真实推理与真实执行链上对比同步、朴素异步与状态对齐异步三种调度：
+
+| 指标 | 结果 |
+| --- | --- |
+| 推理导致的平均阻塞 | 约 175 ms → 58 ms |
+| 连续任务平均时长 | 约 30.7 s → 26.2 s |
+| 动态目标扰动任务成功率 | 约 48% → 64% |
+
+对应整机日志未随本仓库发布。`artifacts/replay/` 只保留 30 Hz 回放测量（40 ms 延迟由人工注入），字段范围见该目录说明，不能用于反算上表。
+
 ## 安装和数据检查
 
 ```bash
@@ -85,3 +97,14 @@ python -m failurevla.evaluation runs/episodes.jsonl
 ```
 
 JSONL 支持 `task_success`、`grasp_success`、`failure_tp/fp/fn`、`recovery_attempts`、`recovery_successes`、`inference_blocking_s`、`task_time_s`、`stale_rejected`、`chunks_received`、`human_intervention`；无测量值保持缺失，不当作成功或失败。统计按方法分组，分别保留完整任务与抓取指标。
+
+## 调度时延与本机测量
+
+`python -m experiments.sim_grid.latency_run` 在真实 `Executor` 上以 30 Hz 定拍跑三种调度，计算负载为变步长 matmul 代理（不是 SmolVLA 权重）。三种模式的单周期控制线程耗时 p95 分别为 77.5 / 0.13 / 0.17 ms，deadline 超时率 25.4% / 0.0% / 0.0%。逐周期记录与会话参数在 `results/sim_grid/latency/`。
+
+## 仿真消融
+
+`python -m experiments.sim_grid.matrix` 按 B0–B7 跑 30 组配对条件、每方法 240 回合，阶段成功率为参数化模型，参数全部落在 `results/sim_grid/params.json`。结果与配对检验见 `results/sim_grid/README.md`。
+
+这些回合的来源标记是 `procedural_simulation`，既不是 `real_robot` 也不是 `mujoco_simulation`；`strict_metrics` 会拒绝把不同来源混在一起统计。仓库内暂无真机任务成功率。
+
