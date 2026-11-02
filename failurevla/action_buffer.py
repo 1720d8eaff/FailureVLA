@@ -23,7 +23,10 @@ class ActionBuffer:
         if not np.isfinite(old).all() or not np.isfinite(cur).all() or not np.isfinite(a).all() or not np.isfinite([observed_at, now]).all():
             raise ValueError("non-finite input")
         with self._lock:
-            if request_id <= self._last_request or not 0 <= now - observed_at <= self.max_age_s or np.linalg.norm(cur - old) > self.max_state_error:
+            # max_state_error is the largest absolute per-component deviation
+            # (L-infinity), matching vla/action_buffer.py in unitree-g1d-grasp;
+            # it is not a Euclidean norm, so thresholds are dimension-independent.
+            if request_id <= self._last_request or not 0 <= now - observed_at <= self.max_age_s or float(np.max(np.abs(cur - old))) > self.max_state_error:
                 return False
             self._actions = deque(row.copy() for row in a)
             self._last_request = request_id

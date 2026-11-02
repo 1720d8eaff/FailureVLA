@@ -41,7 +41,7 @@ python -m failurevla.train --data data/traj --history 4 --stride 5 --epochs 10 -
 
 ## 异步动作缓冲
 
-`failurevla.action_buffer.ActionBuffer` 接收带请求序号、观测时间和观测状态的动作块。它根据时间差与状态偏差筛选结果，并拒绝晚到的旧请求；通过 `pop()` 消费动作。时间应来自同一单调时钟，状态误差阈值应按状态单位和实际控制系统设置。该组件不直接控制机器人；连接实际系统时需由调用方处理动作尺度、限位、碰撞检查和紧急停止。
+`failurevla.action_buffer.ActionBuffer` 接收带请求序号、观测时间和观测状态的动作块。它根据时间差与状态偏差筛选结果，并拒绝晚到的旧请求；通过 `pop()` 消费动作。时间应来自同一单调时钟，状态误差阈值应按状态单位和实际控制系统设置；`max_state_error` 是**各状态分量绝对偏差的最大值（L∞）**，与 `unitree-g1d-grasp` 的 `vla/action_buffer.py` 同义，不是欧氏范数。该组件不直接控制机器人；连接实际系统时需由调用方处理动作尺度、限位、碰撞检查和紧急停止。
 
 ```python
 from failurevla.action_buffer import ActionBuffer
